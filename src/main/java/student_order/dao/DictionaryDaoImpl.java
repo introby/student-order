@@ -1,5 +1,7 @@
 package student_order.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import student_order.config.Config;
 import student_order.domain.CountryArea;
 import student_order.domain.PassportOffice;
@@ -13,16 +15,16 @@ import java.util.List;
 
 public class DictionaryDaoImpl implements DictionaryDao {
 
+    private static final Logger logger = LoggerFactory.getLogger(DictionaryDaoImpl.class);
+
     private static final String GET_STREET = "SELECT street_code, street_name FROM jc_street WHERE UPPER(street_name) LIKE UPPER(?)";
     private static final String GET_PASSPORT = "SELECT * FROM jc_passport_office WHERE p_office_area_id = ?";
     private static final String GET_REGISTER = "SELECT * FROM jc_register_office WHERE r_office_area_id = ?";
     private static final String GET_AREA = "SELECT * FROM jc_country_struct WHERE area_id LIKE ? AND area_id <> ?";
 
-    //TODO refactoring - create one method
     private Connection getConnection() throws SQLException {
 
-        Connection connection = DriverManager.getConnection(Config.getProperties(Config.DB_URL), Config.getProperties(Config.DB_LOGIN), Config.getProperties(Config.DB_PASSWORD));
-        return connection;
+        return ConnectionBuilder.getConnection();
     }
 
     @Override
@@ -42,6 +44,7 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
             }
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
 
         }
@@ -65,6 +68,7 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
             }
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
 
         }
@@ -88,6 +92,7 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
             }
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
 
         }
@@ -115,6 +120,7 @@ public class DictionaryDaoImpl implements DictionaryDao {
 
             }
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
 
         }

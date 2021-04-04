@@ -1,5 +1,7 @@
 package student_order.dao;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import student_order.config.Config;
 import student_order.domain.*;
 import student_order.exception.DaoException;
@@ -13,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StudentDaoImpl implements StudentOrderDao {
+public class StudentOrderDaoImpl implements StudentOrderDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentOrderDaoImpl.class);
 
     private static final String INSERT_ORDER = "INSERT INTO jc_student_order(" +
             "student_order_status, student_order_date, " +
@@ -58,16 +62,17 @@ public class StudentDaoImpl implements StudentOrderDao {
             "where student_order_status = ? " +
             "order by so.student_order_id limit ?";
 
-    //TODO refactoring - create one method
     private Connection getConnection() throws SQLException {
 
-        return DriverManager.getConnection(Config.getProperties(Config.DB_URL), Config.getProperties(Config.DB_LOGIN), Config.getProperties(Config.DB_PASSWORD));
+        return ConnectionBuilder.getConnection();
     }
 
     @Override
     public Long saveStudentOrder(StudentOrder so) throws DaoException {
 
         Long result = -1L;
+
+        logger.debug("SO: {}", so);
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(INSERT_ORDER, new String[]{"student_order_id"})) {
@@ -104,6 +109,7 @@ public class StudentDaoImpl implements StudentOrderDao {
             }
 
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
 
         }
@@ -194,6 +200,7 @@ public class StudentDaoImpl implements StudentOrderDao {
             }
 
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
         }
         return result;
@@ -217,6 +224,7 @@ public class StudentDaoImpl implements StudentOrderDao {
             findChildren(connection, result);
 
         } catch (SQLException ex) {
+            logger.error(ex.getMessage(), ex);
             throw new DaoException(ex);
         }
         return result;
